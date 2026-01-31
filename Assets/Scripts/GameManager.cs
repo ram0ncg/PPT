@@ -17,14 +17,15 @@ public class GameManager : MonoBehaviour
     public int round;
 
     private TextMeshProUGUI text;
-    
+    private GameObject sprites;
     private GameObject pptButtons;
+    private GameObject erButtons;
     public float winCon;
 
     public CanvasManager cm;
     public Dictionary<int, string> ppt = new Dictionary<int, string>
     {
-        { 0,   "Piedra" },
+        { 0,  "Piedra" },
         { 1,  "Papel" },
         { 2,  "Tijera" },
     };
@@ -40,9 +41,13 @@ public class GameManager : MonoBehaviour
                 playerPoints = 0;
                 machinePoints = 0;
                 winCon = maxRound / 2f;  winCon += 0.5f;
-                text = GameObject.Find("Text").GetComponent<TextMeshProUGUI>();  
+                text = GameObject.Find("Text").GetComponent<TextMeshProUGUI>();
+                sprites = GameObject.Find("Sprites");
+                erButtons = GameObject.Find("ResEx");
                 pptButtons = GameObject.Find("PPT");
+                sprites.SetActive(false);
                 pptButtons.SetActive(false);
+                erButtons.SetActive(false);
                 StartCoroutine(Game());
                 break;
             case 2:
@@ -57,6 +62,8 @@ public class GameManager : MonoBehaviour
         if (playerElection != -1) //El jugador ha elejido
         {
             machineElection = UnityEngine.Random.Range(0, 3);
+            cm.ChangeSprite(true, playerElection);
+            cm.ChangeSprite(false, machineElection);
             if (playerElection != machineElection)
             {
                 switch (playerElection)
@@ -111,24 +118,26 @@ public class GameManager : MonoBehaviour
     IEnumerator RoundResult(bool tie, bool win, bool end, int mE, int pE) //Muestar por pantalla el resultado de la ronda.
     {
         pptButtons.SetActive(false);
+        sprites.SetActive(true);
         round++;
-        string t = "La maquina uso: " + ppt[mE] + " ---- El jugador uso: " + ppt[pE];
+        string t = "El jugador uso: " + ppt[pE] + "        La maquina uso: " + ppt[mE];
         if (end)
         {
-            t += playerPoints >= winCon ? "\nEL JUGADOR" : "\nLA MAQUINA";
+            t += playerPoints >= winCon ? "\n\n\nEL JUGADOR" : "\n\n\nLA MAQUINA";
             t += " GANA LA PARTIDA\n" + playerPoints + " - " + machinePoints;
             text.text = t;
+            erButtons.SetActive(true);
             yield break;
         }
         else
         {
             if (tie)
             {
-                t += "\nEMPATE!\nSe jugara otra ronda.";
+                t += "\n\n\nEMPATE!\nSe jugara otra ronda.";
             }
             else
             {
-                t += win ? "\n\nGana el jugador!" : "\n\nLa maquina gana!";
+                t += win ? "\n\n\nGana el jugador!" : "\n\nLa maquina gana!";
             }
             text.text = t;
             yield return new WaitForSeconds(2.5f);
@@ -150,5 +159,6 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(2.5f);
         text.text = "ELIGE:";
         pptButtons.SetActive(true);
+        sprites.SetActive(false);
     }
 }
