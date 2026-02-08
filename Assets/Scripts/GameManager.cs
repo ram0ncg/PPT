@@ -121,9 +121,21 @@ public class GameManager : MonoBehaviour
         sprites.SetActive(true);
         round++;
         string t = "El jugador uso: " + ppt[pE] + "        La maquina uso: " + ppt[mE];
+        if (tie)
+        {
+            t += "\n\n\nEMPATE!\nSe jugara otra ronda.";
+        }
+        else
+        {
+            t += win ? "\n\n\nGana el jugador!" : "\n\nLa maquina gana!";
+        }
+        text.text = t;
+        yield return new WaitForSeconds(2.5f);
+        text.text = playerPoints + " - " + machinePoints;
+        yield return new WaitForSeconds(3f);
         if (end)
         {
-            t += playerPoints >= winCon ? "\n\n\nEL JUGADOR" : "\n\n\nLA MAQUINA";
+            t = playerPoints >= winCon ? "EL JUGADOR" : "LA MAQUINA";
             t += " GANA LA PARTIDA\n" + playerPoints + " - " + machinePoints;
             text.text = t;
             erButtons.SetActive(true);
@@ -131,21 +143,8 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if (tie)
-            {
-                t += "\n\n\nEMPATE!\nSe jugara otra ronda.";
-            }
-            else
-            {
-                t += win ? "\n\n\nGana el jugador!" : "\n\nLa maquina gana!";
-            }
-            text.text = t;
-            yield return new WaitForSeconds(2.5f);
-            text.text = playerPoints + " - " + machinePoints;
-            yield return new WaitForSeconds(3f);
             StartCoroutine(Game());
-        }
-        
+        }    
     }
     IEnumerator Game()
     {
